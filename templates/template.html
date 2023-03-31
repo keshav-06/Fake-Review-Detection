@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Fake Reviews Detection</title>
+
+    <style>
+        body {
+            background: url(static/back.jpg) no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <br>
+
+
+    <div class="container">
+        <!--  -->
+        <div class="jumbotron">
+            <h3 class="display-4"><b>Fake Reviews Detection</b></h3>
+
+            <div class="form-group" style="padding : 1%">
+                <label for="exampleInputEmail1">Review Text</label>
+                <input id="review_text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Review Text">
+
+            </div>
+
+            <div class="form-group" style="width : 32%;float:left;padding-left : 1%; padding-right : 1%">
+                <label for="exampleFormControlSelect1">Rating</label>
+                <select class="form-control" id="rating">
+				<option value = "1">1</option>
+				<option value = "2">2</option>
+				<option value = "3">3</option>
+				<option value = "4">4</option>
+				<option value = "5">5</option>
+			</select>
+            </div>
+
+
+            <div class="form-group" style="width : 32%; float:left;padding-left : 1%; padding-right : 1%">
+                <label for="exampleFormControlSelect1">Verified Purchase</label>
+                <select class="form-control" id="verified_purchase">
+				<option value = "Y">Yes</option>
+				<option value = "N">No</option>
+
+			</select>
+            </div>
+
+
+            <div class="form-group" style="width : 32%; float:left;padding-left : 1%; padding-right : 1%">
+                <label for="exampleFormControlSelect1">Product Category</label>
+                <select class="form-control" id="product_category">
+				<option value = "Apparel">Apparel</option>
+				<option value = "Automotive">Automotive</option>
+				<option value = "Baby">Baby</option>
+				<option value = "Beauty">Beauty</option>
+				<option value = "Books">Books</option>
+				<option value = "Camera">Camera</option>
+				<option value = "Electronics">Electronics</option>
+				<option value = "Furniture">Furniture</option>
+				<option value = "Grocery">Grocery</option>
+				<option value = "Health & Personal Care">Health & Personal Care</option>
+				<option value = "Home">Home</option>
+				<option value = "Home Entertainment">Home Entertainment</option>
+				<option value = "Home Improvement">Home Improvement</option>
+				<option value = "Jewelry">Jewelry</option>
+				<option value = "Kitchen">Kitchen</option>
+				<option value = "Lawn and Garden">Lawn and Garden</option>
+				<option value = "Luggage">Luggage</option>
+				<option value = "Musical Instruments">Musical Instruments</option>
+				<option value = "Office Products">Office Products</option>
+				<option value = "Outdoors">Outdoors</option>
+				<option value = "PC">PC</option>
+				<option value = "Pet Products">Pet Products</option>
+				<option value = "Shoes">Shoes</option>
+				<option value = "Sports">Sports</option>
+				<option value = "Tools">Tools</option>
+				<option value = "Toys">Toys</option>
+				<option value = "Video DVD">Video DVD</option>
+				<option value = "Video Games">Video Games</option>
+				<option value = "Watches">Watches</option>
+				<option value = "Wireless">Wireless</option>
+			</select>
+            </div>
+
+            <br>
+
+            <div class="form-group" style="padding-left : 1%; padding-right : 1%">
+                <br><br><br>
+                <a id="submit" class="btn btn-primary btn-lg" role="button" style="color:white">Submit</a>
+            </div>
+
+        </div>
+
+
+        <div class="jumbotron">
+            <div class="form-group">
+
+                <h3><b>Result</b></h3>
+
+                <img id="loader" src="static/loader.gif" style="width : 30px;height:30px">
+
+                <p id="result"></p>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+    <script>
+        $("#result").hide();
+        $("#loader").hide();
+
+        $("#submit").click(function() {
+            review_text = $("#review_text").val();
+            rating = $("#rating").val();
+            verified_purchase = $("#verified_purchase").val();
+            product_category = $("#product_category").val();
+
+            //alert(verified_purchase);
+
+            $("#result").hide();
+            $("#loader").show();
+
+            var data = {};
+
+            data["review_text"] = review_text;
+            data["rating"] = rating;
+            data["verified_purchase"] = verified_purchase;
+            data["product_category"] = product_category;
+
+            console.log(JSON.stringify(data));
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/bot',
+                dataType: 'json',
+
+                data: data,
+                success: function(callback) {
+                    console.log(callback);
+                    $("#result").show();
+
+                    if (callback.result == 'F') {
+                        $("#result").text("This is a Fake Review");
+                    } else {
+                        $("#result").text("This is a True Review");
+                    }
+
+                    $("#loader").hide();
+                },
+                error: function(jqXHR, exception) {
+
+                    $("#result").hide();
+
+                    var msg = '';
+                    msg = jqXHR.responseText;
+                    console.log(msg);
+                    //alert(msg);
+                    $("#loader").hide();
+                },
+            });
+
+
+
+        });
+    </script>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+</html>
